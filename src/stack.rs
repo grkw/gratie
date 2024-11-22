@@ -23,14 +23,36 @@ impl<T> Stack<T> {
         self.stack.len()
     }
 
-    fn peek(&self) -> Option<&T> { // Option<&T> is a reference to an item in the stack because if we return the item itself, that would mean removing it.
+    fn peek(&self) -> Option<&T> {
+        // Option<&T> is a reference to an item in the stack because if we return the item itself, that would mean removing it.
         self.stack.last()
     }
 
-    fn add(&self) {
-        // let a1 = self.stack.pop(); //need to unwrap Option<T>?
-        // let a2 = self.stack.pop();
-        // let sum = a1 + a2;
-        // self.push(sum);
-    }
+    fn add(&self) {}
+
+    fn subtract(&self) {}
+
+    fn multiply(&self) {}
+
+    fn divide(&self) {}
+
+    fn duplicate(&self) {}
+
+    fn read_in(&self, is_char: bool) {}
+
+    fn write_out(&self, is_char: bool) {}
 }
+
+/*
+-5	out(char)
+-4	in(number)
+-3	pop
+-2	divide
+-1	subtract
+1	add
+2	multiply
+3	push
+4	in(char)
+5	out(number)
+6	duplicate
+*/

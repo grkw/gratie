@@ -1,15 +1,24 @@
 enum Color {
+    Yellow,
+    YellowGreen,
+    Green,
+    BlueGreen,
+    Blue,
+    BlueViolet,
+    Violet,
+    RedViolet,
+    Red,
+    RedOrange,
+    Orange,
+    YellowOrange,
     White,
-    Black
+    Black,
 }
 
 struct Grid {
     cells: Vec<Vec<Color>>,
-    size: (usize, usize)
+    size: (usize, usize),
 }
-
-// Color: white, black, dark green, green,
-// Color: hue_value, lightnes_value
 
 impl Grid {
     fn new(height: usize, width: usize) -> Self {
@@ -23,7 +32,11 @@ impl Grid {
         }
         Grid {
             cells: grid,
-            size: (height, width)
+            size: (height, width),
         }
+    }
+
+    fn print(&self) {
+        println!("{}", self.cells);
     }
 }
