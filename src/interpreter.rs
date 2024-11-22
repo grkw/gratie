@@ -1,3 +1,10 @@
+// ./gratie <image file> # start interpreter
+//
+// repl commands:
+// - step: execute one command
+// - run: run entire program and print result
+//
+
 // The interpreter finds the edge of the current colour block which is furthest in the direction of the DP. (This edge may be disjoint if the block is of a complex shape.)
 // The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
 // The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
@@ -21,7 +28,13 @@ impl Interpreter {
     }
 
 /* 
-pre: new index inside a color block
+ * interpreter loop:
+ *
+ * state to track across iterations:
+ * - index of current codel (pre: new index inside a color block)
+ * - DP direction
+ * - CC direction
+ * - stack
 step
     get color of current codel
     find all codels in current color block (floodfill)
