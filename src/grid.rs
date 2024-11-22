@@ -1,4 +1,7 @@
-enum Color {
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
+pub(crate) enum Color {
     Yellow,
     YellowGreen,
     Green,
@@ -15,7 +18,8 @@ enum Color {
     Black,
 }
 
-struct Grid {
+#[derive(Debug)]
+pub(crate) struct Grid {
     cells: Vec<Vec<Color>>,
     size: (usize, usize),
 }
@@ -37,6 +41,6 @@ impl Grid {
     }
 
     fn print(&self) {
-        println!("{}", self.cells);
+        println!("{:?}", self.cells);
     }
 }

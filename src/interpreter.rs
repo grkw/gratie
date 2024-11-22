@@ -9,6 +9,8 @@
 // The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
 // The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
 
+use crate::grid::Color;
+
 struct Interpreter {
     pos: (usize, usize),
     block_color: Color,
@@ -21,35 +23,34 @@ struct Interpreter {
 
 // Program grid
 
-
 impl Interpreter {
     fn new() -> Self {
-        Interpreter {}
+        //Interpreter {}
+        todo!()
     }
 
-/* 
- * interpreter loop:
- *
- * state to track across iterations:
- * - index of current codel (pre: new index inside a color block)
- * - DP direction
- * - CC direction
- * - stack
-step
-    get color of current codel
-    find all codels in current color block (floodfill)
-    find block integer
+    /*
+     * interpreter loop:
+     *
+     * state to track across iterations:
+     * - index of current codel (pre: new index inside a color block)
+     * - DP direction
+     * - CC direction
+     * - stack
+    step
+        get color of current codel
+        find all codels in current color block (floodfill)
+        find block integer
 
-    find edge (DP): returns a few codel options
+        find edge (DP): returns a few codel options
 
-    find codel (CC): returns one code option
+        find codel (CC): returns one code option
 
-    move: update color_block
-        handle white block
-        handle black block or edge
+        move: update color_block
+            handle white block
+            handle black block or edge
 
-*/
-
+    */
 }
 
 enum DP {
