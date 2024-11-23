@@ -1,0 +1,2 @@
+Yellow,YellowGreen,Green,BlueGreen,Blue,BlueViolet,Violet,RedViolet,Red,RedOrange,Orange,YellowOrange,White,Black
+yELLOW,yELLOWgREEN,gREEN,bLUEgREEN,bLUE,bLUEvIOLET,vIOLET,rEDvIOLET,rED,rEDoRANGE,oRANGE,yELLOWoRANGE,wHITE,bLACK

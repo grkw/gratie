@@ -5,6 +5,7 @@ mod stack; // Lets the compiler know about the `stack` module
 
 use std::fs::File;
 
+use anyhow::{anyhow, Result};
 use clap::Parser;
 use parsers::GratieParse;
 use stack::Stack; // Brings the `Stack` struct into scope, so you can use `Stack` directly without needing to prefix it with `stack::`.
@@ -15,7 +16,7 @@ struct Args {
     program_file: String,
 }
 
-fn main() {
+fn main() -> Result<()> {
     let mut interpreter_pos = (0, 0);
     let mut s = Stack::<i32>::new();
     // let program p = Vec<Vec::new()>;
@@ -25,5 +26,7 @@ fn main() {
 
     // TODO(jph): check file extension to determine parse type; for now, just create a text parser
     let parser = parsers::SimpleText::default();
-    let grid = parser.parse(f).unwrap();
+    let grid = parser.parse(f)?;
+
+    Ok(())
 }
