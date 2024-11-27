@@ -9,23 +9,40 @@
 // The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
 // The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
 
-use crate::grid::Color;
+use crate::grid::{Color, Grid};
 
-struct Interpreter {
+pub(crate) struct Interpreter {
     pos: (usize, usize),
     block_color: Color,
     block_integer: u16,
     hue_change_steps: u8, // tell the command controller
+    grid: Grid,
 }
 
 // Color block
 // A set of codels (each codel is a struct with a position and color)
+// struct Codel {
+//     color: Color,
+//     pos: (usize, usize),
+// }
 
 // Program grid
 
 impl Interpreter {
-    fn new() -> Self {
-        //Interpreter {}
+    pub(crate) fn new(grid: Grid) -> Self {
+        let init_pos = (0, 0);
+        let init_color = grid.get_color(init_pos);
+        // let init_block_integer = grid.find_codel_block(init_pos);
+        Interpreter {
+            pos: init_pos,
+            block_color: init_color,
+            block_integer: 0,
+            hue_change_steps: 0,
+            grid: grid,
+        }
+    }
+
+    fn step() {
         todo!()
     }
 
@@ -44,7 +61,7 @@ impl Interpreter {
 
         find edge (DP): returns a few codel options
 
-        find codel (CC): returns one code option
+        find codel (CC): returns one codel option
 
         move: update color_block
             handle white block
