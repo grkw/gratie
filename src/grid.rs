@@ -42,7 +42,7 @@ impl Color {
 
 #[derive(Debug)]
 pub(crate) struct Grid {
-    cells: Vec<Vec<Color>>,
+    cells: Vec<Vec<Color>>, // indexed like a 2d array [row index][col index], *not* like x-y coords
     size: (usize, usize),
 }
 
