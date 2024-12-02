@@ -91,27 +91,44 @@ impl Grid {
             ];
 
         q.push(pos);
+        let mut count = 0;
         while !q.is_empty() {
             let n = q.pop().unwrap();
+            println!("\nn: {},{}", n.0, n.1);
+            println!("codels: {:?}", codels);
+            println!("q: {:?}", q);
             if self.cells[n.0][n.1] == codel_color {
-                println!("+1");
-                codels.push((n.0, n.1));
+                // println!("+1");
+                if !codels.contains(&(n.0, n.1)) {
+                    codels.push((n.0, n.1));
+                }
+                
                 // let node_north = (n.0, n.1-1);
                 // let node_east = (n.0+1, n.1);
                 // let node_south = (n.0, n.1+1);
                 // let node_west = (n.0-1, n.1);
                 for (dx, dy) in deltas {
-                    let new_x = n.0 as isize + dx; // Convert to isize to allow for negative values
-                    let new_y = n.1 as isize + dy;
+                    let row = n.0 as isize + dx; // Convert to isize to allow for negative values
+                    let col = n.1 as isize + dy;
 
                     // Check if the cell coords are within bounds
-                    let x_valid = new_x >= 0 && new_x < self.size.0 as isize;
-                    let y_valid = new_y >= 0 && new_y < self.size.1 as isize;
+                    let x_valid = row >= 0 && row < self.size.0 as isize;
+                    let y_valid = col >= 0 && col < self.size.1 as isize;
                     if x_valid && y_valid {
-                        println!("push");
-                        q.push((new_x as usize, new_y as usize));
+                        // println!("pos: {},{}", row, col);
+                        if !q.contains(&(row as usize, col as usize)) {
+                            q.push((row as usize, col as usize));
+                        }
                     }
                 }
+            }
+
+            println!("codels: {:?}", codels);
+            println!("q: {:?}", q);
+
+            count += 1;
+            if count == 15 {
+                break;
             }
         }
 
