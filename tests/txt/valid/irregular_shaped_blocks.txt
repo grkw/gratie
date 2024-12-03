@@ -1,0 +1,10 @@
+white,white,white,white,white
+white,white,white,white,white
+yellow,yellow,yellow,white,white
+white,white,yellow,yellow,yellow
+white,white,yellow,white,green
+white,white,white,white,green
+white,white,white,white,green
+white,white,white,white,green
+black,white,white,white,green
+white,green,green,green,green

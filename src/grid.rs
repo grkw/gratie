@@ -62,79 +62,49 @@ impl Grid {
         self.cells[pos.0][pos.1].clone()
     }
 
-    // Flood-fill (node):
-    // 1. Set Q to the empty queue or stack.
-    // 2. Add node to the end of Q.
-    // 3. While Q is not empty:
-    // 4.   Set n equal to the first element of Q.
-    // 5.   Remove first element from Q.
-    // 6.   If n is Inside:
-    //        Set the n
-    //        Add the node to the west of n to the end of Q.
-    //        Add the node to the east of n to the end of Q.
-    //        Add the node to the north of n to the end of Q.
-    //        Add the node to the south of n to the end of Q.
-    // 7. Continue looping until Q is exhausted.
-    // 8. Return.
-    
     pub(crate) fn find_codel_block(&self, pos: (usize, usize)) -> Vec<(usize, usize)> {
         //at current position
         let mut q = Vec::new();
-        let mut codels: Vec<(usize, usize)> = Vec::new();
+        let mut results: Vec<(usize, usize)> = Vec::new();
+        
         let codel_color = self.cells[pos.0][pos.1].clone();
-        println!("Codel color: {:?}", codel_color);
+        // println!("Codel color: {:?}", codel_color);
 
         let deltas = [
-                   (0, -1), 
-            (-1, 0),     (0, 1),
+                   (-1, 0), 
+            (0, -1),     (0, 1),
                    (1, 0), 
             ];
 
         q.push(pos);
-        let mut count = 0;
+        
         while !q.is_empty() {
             let n = q.pop().unwrap();
-            println!("\nn: {},{}", n.0, n.1);
-            println!("codels: {:?}", codels);
-            println!("q: {:?}", q);
             if self.cells[n.0][n.1] == codel_color {
-                // println!("+1");
-                if !codels.contains(&(n.0, n.1)) {
-                    codels.push((n.0, n.1));
+                if !results.contains(&(n.0, n.1)) {
+                    results.push((n.0, n.1));
                 }
-                
-                // let node_north = (n.0, n.1-1);
-                // let node_east = (n.0+1, n.1);
-                // let node_south = (n.0, n.1+1);
-                // let node_west = (n.0-1, n.1);
+ 
                 for (dx, dy) in deltas {
+                     // Check if the cell coords are within bounds
                     let row = n.0 as isize + dx; // Convert to isize to allow for negative values
                     let col = n.1 as isize + dy;
-
-                    // Check if the cell coords are within bounds
                     let x_valid = row >= 0 && row < self.size.0 as isize;
                     let y_valid = col >= 0 && col < self.size.1 as isize;
+                    
                     if x_valid && y_valid {
-                        // println!("pos: {},{}", row, col);
-                        if !q.contains(&(row as usize, col as usize)) {
+                        if !q.contains(&(row as usize, col as usize)) && !results.contains(&(row as usize, col as usize)) {
                             q.push((row as usize, col as usize));
                         }
                     }
                 }
             }
-
-            println!("codels: {:?}", codels);
-            println!("q: {:?}", q);
-
-            count += 1;
-            if count == 15 {
-                break;
-            }
         }
 
-        println!("Codels: {:?}", codels);
-        println!("Codel block size: {}", codels.len());
-        codels
+        // println!("Codels: {:?}", results);
+        // println!("Codel block size: {}", results.len());
+
+        results
     }
 
 }
@@ -174,8 +144,8 @@ mod test {
     #[test]
     fn default_grid() {
         let grid = Grid::default(); // 10x10 white cells
-        let codels_in_block = grid.find_codel_block((0,0));
-        assert_eq!(codels_in_block.len(), 10);
+        let codels_in_block = grid.find_codel_block((0,0)); //white
+        assert_eq!(codels_in_block.len(), 100);
     }
 
     #[test]
@@ -185,12 +155,25 @@ mod test {
         // TODO(jph): check file extension to determine parse type; for now, just create a text parser
         let parser = SimpleText::default();
         let grid = parser.parse(f).unwrap();
-        let codels_in_block = grid.find_codel_block((0,0));
+        let codels_in_block = grid.find_codel_block((0,1)); //blue
         assert_eq!(codels_in_block.len(), 4);
     }
 
     #[test]
-    fn irregular_shaped_block() {
+    fn irregular_shaped_blocks() {
 
+        let f = File::open("./tests/txt/valid/irregular_shaped_blocks.txt").expect("could not open input program file");
+
+        // TODO(jph): check file extension to determine parse type; for now, just create a text parser
+        let parser = SimpleText::default();
+        let grid = parser.parse(f).unwrap();
+        let codels_in_block = grid.find_codel_block((2,1)); //yellow
+        assert_eq!(codels_in_block.len(), 7);
+        
+        let codels_in_block = grid.find_codel_block((9,4)); //green
+        assert_eq!(codels_in_block.len(), 9);
+        
+        let codels_in_block = grid.find_codel_block((8,0)); //black
+        assert_eq!(codels_in_block.len(), 1);
     }
 }
