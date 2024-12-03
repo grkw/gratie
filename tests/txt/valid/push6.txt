@@ -1,0 +1,4 @@
+violet,violet,violet,redorange,black
+violet,violet,violet,redorange,black
+redorange,redorange,redorange,redorange,black
+black,black,black,black,black
