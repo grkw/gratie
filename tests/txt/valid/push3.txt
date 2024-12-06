@@ -1,0 +1,4 @@
+green,green,blueviolet,black
+green,blueviolet,blueviolet,black
+blueviolet,blueviolet,black,black
+black,black,black,black

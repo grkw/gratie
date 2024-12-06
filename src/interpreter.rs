@@ -156,17 +156,28 @@ impl Interpreter {
     step
         get color of current codel
         find all codels in current color block (floodfill)
+         * interpreter loop:
+         *
+         * state to track across iterations:
+         * - index of current codel (pre: new index inside a color block)
+         * - DP direction
+         * - CC direction
+         * - stack
+        step
+            get color of current codel
+            find all codels in current color block (floodfill)
             find block integer
 
-        find edge (DP): returns a few codel options
+            find edge (DP): returns a few codel options
 
         find codel (CC): returns one codel option
+            find codel (CC): returns one code option
+    DP_CC_dir = ([right, left], [right, right], [down, right], [down, left])
+            move: update color_block
+                handle white block
+                handle black block or edge
 
-        move: update color_block
-            handle white block
-            handle black block or edge
-
-    */
+        */
 }
 
 #[derive(PartialEq)]
