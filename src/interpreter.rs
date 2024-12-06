@@ -148,6 +148,7 @@ impl Interpreter {
             let current_block: Vec<CodelIndex> = self.grid.find_codel_block(current_codel);
             let edge = self.find_edge_codels(&current_block);
             let corner = self.find_corner_codel(&edge);
+            
             let mut next_codel;
 
             let mut i = 0;
@@ -159,11 +160,19 @@ impl Interpreter {
                 }
 
                 next_codel = self.get_next_codel(corner, current_dp, current_cc);
+                if next_codel.is_some() {
+                    current_codel = next_codel.unwrap();
+                    break;
+                }
                 i += 1;
+            }
+            
+            if i == 8 {
+                terminated = true;
             }
 
             // TODO: command execution (jph)
-            // TODO: handle termination (grace)
+            // TODO: handle termination (grace) -- done (but need to test)
             // TODO: get_next_codel (jph)
         }
     }
