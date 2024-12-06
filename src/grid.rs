@@ -216,8 +216,6 @@ mod test {
         let codels_in_block = grid.find_codel_block((8,0)); //black
         assert_eq!(codels_in_block.len(), 1);
     }
-}
-    use crate::grid::Grid;
 
     #[test]
     fn generate_default_img() {
