@@ -9,10 +9,7 @@
 // The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
 // The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
 
-use crate::grid::{Color, Grid};
-
-// Index of a codel at (row, column)
-type CodelIndex = (usize, usize);
+use crate::grid::{Color, CodelIndex, Grid};
 
 pub(crate) struct Interpreter {
     pos: CodelIndex,
@@ -76,7 +73,7 @@ impl Interpreter {
     //TODO: decide if this should belong to Grid instead, and Interpreter can just query Grid for the # of codels in the block and the next codel according to DP and CC
     fn find_edge_codels(&self, mut block_codels: Vec<CodelIndex>) -> Vec<CodelIndex> {
         // TODO: decide ownership of block_codels -- maybe it should be a reference slice and the only thing that owns codels is Grid
-        let mut edge_codels: Vec<(usize, usize)> = Vec::new();
+        let mut edge_codels: Vec<CodelIndex> = Vec::new();
         if block_codels.is_empty() {
             panic!(); //TODO: find good way of error handling
         }
@@ -175,7 +172,7 @@ impl Interpreter {
         let mut terminated = false;
 
         while !terminated {
-            let current_block: Vec<(usize, usize)> = self.grid.find_codel_block(current_codel);
+            let current_block: Vec<CodelIndex> = self.grid.find_codel_block(current_codel);
             let edge = self.find_edge_codels(current_block);
             let corner = self.find_corner_codel(edge);
             let mut next_codel;

@@ -1,5 +1,8 @@
 use image::{imageops, Rgb, RgbImage};
 
+// Index of a codel at (row, column)
+pub type CodelIndex = (usize, usize);
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub(crate) enum Color {
     Yellow,
@@ -78,14 +81,14 @@ impl Grid {
         println!("{:?}", self.cells);
     }
 
-    pub(crate) fn get_color(&self, pos: (usize, usize)) -> Color {
+    pub(crate) fn get_color(&self, pos: CodelIndex) -> Color {
         self.cells[pos.0][pos.1].clone()
     }
 
-    pub(crate) fn find_codel_block(&self, pos: (usize, usize)) -> Vec<(usize, usize)> {
+    pub(crate) fn find_codel_block(&self, pos: CodelIndex) -> Vec<CodelIndex> {
         //at current position
         let mut q = Vec::new();
-        let mut results: Vec<(usize, usize)> = Vec::new();
+        let mut results: Vec<CodelIndex> = Vec::new();
 
         let codel_color = self.cells[pos.0][pos.1].clone();
         // println!("Codel color: {:?}", codel_color);
