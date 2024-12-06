@@ -7,8 +7,8 @@ use std::fs::File;
 
 use anyhow::{anyhow, Result};
 use clap::Parser;
-use parsers::GratieParse;
 use interpreter::Interpreter;
+use parsers::GratieParse;
 use stack::Stack; // Brings the `Stack` struct into scope, so you can use `Stack` directly without needing to prefix it with `stack::`.
 
 #[derive(Parser, Debug)]
@@ -18,7 +18,6 @@ struct Args {
 }
 
 fn main() -> Result<()> {
-
     let args = Args::parse();
     let f = File::open(args.program_file).expect("could not open input program file");
 

@@ -52,12 +52,14 @@ impl Interpreter {
 
     //TODO: use hashmap or hashset?
     //TODO: decide if this should belong to Grid instead, and Interpreter can just query Grid for the # of codels in the block and the next codel according to DP and CC
-    fn find_edge_codels(&self, mut block_codels: Vec<(usize, usize)>) -> Vec<(usize, usize)> { // TODO: decide ownership of block_codels -- maybe it should be a reference slice and the only thing that owns codels is Grid
+    fn find_edge_codels(&self, mut block_codels: Vec<(usize, usize)>) -> Vec<(usize, usize)> {
+        // TODO: decide ownership of block_codels -- maybe it should be a reference slice and the only thing that owns codels is Grid
         let mut edge_codels: Vec<(usize, usize)> = Vec::new();
         if block_codels.is_empty() {
             panic!(); //TODO: find good way of error handling
         }
-        match self.dp { // TODO: eliminate repeated code for readability
+        match self.dp {
+            // TODO: eliminate repeated code for readability
             DP::RIGHT => {
                 block_codels.sort_by_key(|tuple| tuple.0);
                 let edge_coord = block_codels.last().unwrap().0;
@@ -103,9 +105,8 @@ impl Interpreter {
                 }
             }
         }
-        
-        edge_codels
 
+        edge_codels
     }
 
     fn find_corner_codel(&self, mut edge_codels: Vec<(usize, usize)>) -> (usize, usize) {
@@ -126,21 +127,21 @@ impl Interpreter {
         //         if self.cc == CC::LEFT {
 
         //         } else {
-                    
+
         //         }
         //     }
         //     DP::LEFT => {
         //         if self.cc == CC::LEFT {
 
         //         } else {
-                    
+
         //         }
         //     }
         //     DP::UP => {
         //         if self.cc == CC::LEFT {
 
         //         } else {
-                    
+
         //         }
         //     }
         // }
@@ -193,21 +194,18 @@ enum CC {
     RIGHT,
 }
 
-#[cfg(test)] 
+#[cfg(test)]
 mod tests {
-    use super::Interpreter;
     use super::Grid;
-    use crate::interpreter::{DP, CC};
-    
+    use super::Interpreter;
+    use crate::interpreter::{CC, DP};
+
     //TODO: decide if I wanna keep these tests. Before writing them, they seemed to be a good idea. But now that I've written them, they seem silly and unnecessary. Maybe the exercise of writing them out has been the valuable part (rather than their existence).
     //TODO: decide if I wanna split up test functions by "function under test" (rather than input type, which is what I'm currently doing)
     #[test]
     fn vertical_colorblock() {
         let mut interp = Interpreter::new(Grid::default());
-        let block_codels = vec![(0, 9),
-                                                (1, 9), 
-                                                (2, 9), 
-                                                (3, 9)];
+        let block_codels = vec![(0, 9), (1, 9), (2, 9), (3, 9)];
         interp.dp = DP::RIGHT;
         // assert_eq!(interp.find_edge_codels(&block_codels), block_codels);
         interp.cc = CC::LEFT;
@@ -240,8 +238,8 @@ mod tests {
     #[test]
     fn horizontal_colorblock() {
         let mut interp = Interpreter::new(Grid::default());
-        let block_codels = vec![(1,4), (1,5), (1,6), (1,7), (1,8)];
-        
+        let block_codels = vec![(1, 4), (1, 5), (1, 6), (1, 7), (1, 8)];
+
         interp.dp = DP::RIGHT;
         // assert_eq!(interp.find_edge_codels(&block_codels), vec![(1, 8)]);
         interp.cc = CC::LEFT;
@@ -274,8 +272,7 @@ mod tests {
     #[test]
     fn square_colorblock() {
         let mut interp = Interpreter::new(Grid::default());
-        let block_codels = vec![(3,4), (3,5), 
-                                                 (4,4), (4,5)];
+        let block_codels = vec![(3, 4), (3, 5), (4, 4), (4, 5)];
         interp.dp = DP::RIGHT;
         // assert_eq!(interp.find_edge_codels(&block_codels), vec![(3,5), (4, 5)]);
         interp.cc = CC::LEFT;
@@ -308,10 +305,18 @@ mod tests {
     #[test]
     fn irregular_shaped_block() {
         let mut interp = Interpreter::new(Grid::default());
-        let block_codels = vec![(2,0), (2,1),         (2,3),
-                                                 (3,0), (3, 1), (3,2), (3,3),
-                                                 (4,0), (4, 1),
-                                                        (5, 1) ];
+        let block_codels = vec![
+            (2, 0),
+            (2, 1),
+            (2, 3),
+            (3, 0),
+            (3, 1),
+            (3, 2),
+            (3, 3),
+            (4, 0),
+            (4, 1),
+            (5, 1),
+        ];
         interp.dp = DP::RIGHT;
         // assert_eq!(interp.find_edge_codels(&block_codels), vec![(2,3), (3,3)]);
         interp.cc = CC::LEFT;
@@ -340,5 +345,4 @@ mod tests {
         interp.cc = CC::RIGHT;
         // assert_eq!(interp.find_corner_codel(vec![(2,0), (2,1), (2,3)]), (2,3));
     }
-
 }

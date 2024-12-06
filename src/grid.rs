@@ -1,6 +1,6 @@
 use image::{imageops, Rgb, RgbImage};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub(crate) enum Color {
     Yellow,
     YellowGreen,
@@ -86,34 +86,32 @@ impl Grid {
         //at current position
         let mut q = Vec::new();
         let mut results: Vec<(usize, usize)> = Vec::new();
-        
+
         let codel_color = self.cells[pos.0][pos.1].clone();
         // println!("Codel color: {:?}", codel_color);
 
-        let deltas = [
-                   (-1, 0), 
-            (0, -1),     (0, 1),
-                   (1, 0), 
-            ];
+        let deltas = [(-1, 0), (0, -1), (0, 1), (1, 0)];
 
         q.push(pos);
-        
+
         while !q.is_empty() {
             let n = q.pop().unwrap();
             if self.cells[n.0][n.1] == codel_color {
                 if !results.contains(&(n.0, n.1)) {
                     results.push((n.0, n.1));
                 }
- 
+
                 for (dx, dy) in deltas {
-                     // Check if the cell coords are within bounds
+                    // Check if the cell coords are within bounds
                     let row = n.0 as isize + dx; // Convert to isize to allow for negative values
                     let col = n.1 as isize + dy;
                     let x_valid = row >= 0 && row < self.size.0 as isize;
                     let y_valid = col >= 0 && col < self.size.1 as isize;
-                    
+
                     if x_valid && y_valid {
-                        if !q.contains(&(row as usize, col as usize)) && !results.contains(&(row as usize, col as usize)) {
+                        if !q.contains(&(row as usize, col as usize))
+                            && !results.contains(&(row as usize, col as usize))
+                        {
                             q.push((row as usize, col as usize));
                         }
                     }
@@ -184,36 +182,37 @@ mod test {
     #[test]
     fn default_grid() {
         let grid = Grid::default(); // 10x10 white cells
-        let codels_in_block = grid.find_codel_block((0,0)); //white
+        let codels_in_block = grid.find_codel_block((0, 0)); //white
         assert_eq!(codels_in_block.len(), 100);
     }
 
     #[test]
     fn square_shaped_block() {
-        let f = File::open("./tests/txt/valid/square_color_block.txt").expect("could not open input program file");
+        let f = File::open("./tests/txt/valid/square_color_block.txt")
+            .expect("could not open input program file");
 
         // TODO(jph): check file extension to determine parse type; for now, just create a text parser
         let parser = SimpleText::default();
         let grid = parser.parse(f).unwrap();
-        let codels_in_block = grid.find_codel_block((0,1)); //blue
+        let codels_in_block = grid.find_codel_block((0, 1)); //blue
         assert_eq!(codels_in_block.len(), 4);
     }
 
     #[test]
     fn irregular_shaped_blocks() {
-
-        let f = File::open("./tests/txt/valid/irregular_shaped_blocks.txt").expect("could not open input program file");
+        let f = File::open("./tests/txt/valid/irregular_shaped_blocks.txt")
+            .expect("could not open input program file");
 
         // TODO(jph): check file extension to determine parse type; for now, just create a text parser
         let parser = SimpleText::default();
         let grid = parser.parse(f).unwrap();
-        let codels_in_block = grid.find_codel_block((2,1)); //yellow
+        let codels_in_block = grid.find_codel_block((2, 1)); //yellow
         assert_eq!(codels_in_block.len(), 7);
-        
-        let codels_in_block = grid.find_codel_block((9,4)); //green
+
+        let codels_in_block = grid.find_codel_block((9, 4)); //green
         assert_eq!(codels_in_block.len(), 9);
-        
-        let codels_in_block = grid.find_codel_block((8,0)); //black
+
+        let codels_in_block = grid.find_codel_block((8, 0)); //black
         assert_eq!(codels_in_block.len(), 1);
     }
 
