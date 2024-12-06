@@ -68,7 +68,7 @@ pub(crate) enum SimpleTextParseError {
     },
 }
 
-impl GratieParse for SimpleText {
+impl GratieParse for SimpleText { // impl TraitName for TypeName
     fn parse(&self, mut f: File) -> Result<Grid> {
         let mut contents = String::new();
         f.read_to_string(&mut contents)?;
