@@ -1,4 +1,4 @@
-use image::{imageops, Rgb, RgbImage};
+use image::{DynamicImage, Rgb, RgbImage};
 
 // Index of a codel at (row, column)
 pub type CodelIndex = (usize, usize);
@@ -128,7 +128,7 @@ impl Grid {
         results
     }
 
-    fn generate_image(&self, fname: &str) {
+    fn generate_image(&self, fname: &str, scale_factor: usize) {
         // a default (black) image containing Rgb values
         let mut image = RgbImage::new(self.size.0 as u32, self.size.1 as u32);
 
@@ -142,11 +142,20 @@ impl Grid {
                 );
             }
         }
-        // TODO: scale image up. probably need to convert to DynamicImage. https://docs.rs/image/latest/image/enum.DynamicImage.html#method.resize
-        // resize(image, 100, 100)
+        
+        // Convert RgbImage to DynamicImage
+        let dynamic_image = DynamicImage::ImageRgb8(image);
+
+        // Scale up the image to be about 200x200
+        let scaled_image = dynamic_image.resize(
+            (self.size.0 * scale_factor) as u32,
+            (self.size.1 * scale_factor) as u32,
+            image::imageops::FilterType::Nearest,
+        );
 
         // write it out to a file
-        image.save(fname).unwrap();
+        scaled_image.save(fname).unwrap();
+
     }
 }
 
@@ -159,7 +168,7 @@ impl Default for Grid {
         for _ in 0..height {
             let mut row = Vec::with_capacity(width);
             for _ in 0..width {
-                row.push(Color::YellowGreen)
+                row.push(Color::White)
             }
             grid.push(row);
         }
@@ -185,6 +194,7 @@ mod test {
     #[test]
     fn default_grid() {
         let grid = Grid::default(); // 10x10 white cells
+        grid.generate_image("tests/png/default_grid.png", 50);
         let codels_in_block = grid.find_codel_block((0, 0)); //white
         assert_eq!(codels_in_block.len(), 100);
     }
@@ -197,6 +207,7 @@ mod test {
         // TODO(jph): check file extension to determine parse type; for now, just create a text parser
         let parser = SimpleText::default();
         let grid = parser.parse(f).unwrap();
+        grid.generate_image("tests/png/square_shaped_block.png", 50);
         let codels_in_block = grid.find_codel_block((0, 1)); //blue
         assert_eq!(codels_in_block.len(), 4);
     }
@@ -209,6 +220,7 @@ mod test {
         // TODO(jph): check file extension to determine parse type; for now, just create a text parser
         let parser = SimpleText::default();
         let grid = parser.parse(f).unwrap();
+        grid.generate_image("tests/png/irregular_shaped_blocks.png", 50);
         let codels_in_block = grid.find_codel_block((2, 1)); //yellow
         assert_eq!(codels_in_block.len(), 7);
 
@@ -219,10 +231,10 @@ mod test {
         assert_eq!(codels_in_block.len(), 1);
     }
 
-    #[test]
-    fn generate_default_img() {
-        //TODO: this shouldn't be its own test, I don't think? But handy to have this code somewhere. Probably include it in the other tests.
-        let g = Grid::default();
-        g.generate_image("default.png");
-    }
+    // #[test]
+    // fn generate_default_img() {
+    //     //TODO: this shouldn't be its own test, I don't think? But handy to have this code somewhere. Probably include it in the other tests.
+    //     let g = Grid::default();
+    //     g.generate_image("tests/png/default.png");
+    // }
 }
