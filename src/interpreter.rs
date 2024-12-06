@@ -114,7 +114,7 @@ impl Interpreter {
         println!("self.dp: {:?}", self.dp);
         println!("self.cc: {:?}", self.cc);
 
-        // Sort edge_codels by the coordinate corresponding to DP. This is the opposite of in find_edge_codels
+        // Sort edge_codels by the coordinate *not* corresponding to DP (the coordinate that CC will use to pick one codel).
         match self.dp {
             DP::RIGHT | DP::LEFT => {
                 edge_codels.sort_by_key(|tuple| tuple.0);
@@ -125,7 +125,7 @@ impl Interpreter {
         };
         println!("block codels: {:?}", edge_codels);
 
-        // Determine furthest-edge coordinate to filter edge_codels by
+        // Select the corner codel according to CC, from DP's frame of reference.
         let corner_codel = match (self.dp, self.cc) {
             (DP::RIGHT, CC::RIGHT) | (DP::LEFT, CC::LEFT) => edge_codels.last().unwrap(), // bottom-most
             (DP::DOWN, CC::LEFT) | (DP::UP, CC::RIGHT) => edge_codels.last().unwrap(), // right-most
