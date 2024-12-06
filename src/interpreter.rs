@@ -105,40 +105,36 @@ impl Interpreter {
         edge_codels
     }
 
-    fn find_corner_codel(&self, mut edge_codels: Vec<CodelIndex>) -> CodelIndex {
+    fn find_corner_codel(&self, edge_codels: &Vec<CodelIndex>) -> CodelIndex {
         assert!(!edge_codels.is_empty(), "edge codels cannot be empty");
 
-        todo!();
-        // match self.dp {
-        //     DP::RIGHT => {
-        //         if self.cc == CC::LEFT {
+        // Create a local copy which will change the order of edge_codels
+        let mut edge_codels = edge_codels.clone();
 
-        //         } else {
+        println!("self.dp: {:?}", self.dp);
+        println!("self.cc: {:?}", self.cc);
 
-        //         }
-        //     }
-        //     DP::DOWN => {
-        //         if self.cc == CC::LEFT {
+        // Sort edge_codels by the coordinate corresponding to DP. This is the opposite of in find_edge_codels
+        match self.dp {
+            DP::RIGHT | DP::LEFT => {
+                edge_codels.sort_by_key(|tuple| tuple.0);
+            }
+            DP::UP | DP::DOWN => {
+                edge_codels.sort_by_key(|tuple| tuple.1);
+            }
+        };
+        println!("block codels: {:?}", edge_codels);
 
-        //         } else {
-
-        //         }
-        //     }
-        //     DP::LEFT => {
-        //         if self.cc == CC::LEFT {
-
-        //         } else {
-
-        //         }
-        //     }
-        //     DP::UP => {
-        //         if self.cc == CC::LEFT {
-
-        //         } else {
-
-        //         }
-        //     }
-        // }
+        // Determine furthest-edge coordinate to filter edge_codels by
+        let corner_codel = match (self.dp, self.cc) {
+            (DP::RIGHT, CC::RIGHT) | (DP::LEFT, CC::LEFT) => edge_codels.last().unwrap(), // bottom-most
+            (DP::DOWN, CC::LEFT) | (DP::UP, CC::RIGHT) => edge_codels.last().unwrap(), // right-most
+            (DP::DOWN, CC::RIGHT) | (DP::UP, CC::LEFT) => edge_codels.first().unwrap(), // left-most
+            (DP::RIGHT, CC::LEFT) | (DP::LEFT, CC::RIGHT) => edge_codels.first().unwrap(), // top-most
+        };
+        println!("corner codel: {:?}", *corner_codel);
+            
+        *corner_codel
     }
 
     pub(crate) fn run(&self) {
@@ -151,7 +147,7 @@ impl Interpreter {
         while !terminated {
             let current_block: Vec<CodelIndex> = self.grid.find_codel_block(current_codel);
             let edge = self.find_edge_codels(&current_block);
-            let corner = self.find_corner_codel(edge);
+            let corner = self.find_corner_codel(&edge);
             let mut next_codel;
 
             let mut i = 0;
@@ -256,32 +252,32 @@ mod tests {
         let mut interp = Interpreter::new(Grid::default());
         let block_codels = vec![(0, 9), (1, 9), (2, 9), (3, 9)];
         interp.dp = DP::RIGHT;
-        assert_eq!(interp.find_edge_codels(&block_codels), vec![(0, 9), (1, 9), (2, 9), (3, 9)]); // block codels swaps the order
+        assert_eq!(interp.find_edge_codels(&block_codels), vec![(0, 9), (1, 9), (2, 9), (3, 9)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(&block_codels), (0,9));
+        assert_eq!(interp.find_corner_codel(&block_codels), (0,9));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(&block_codels), (3,9));
+        assert_eq!(interp.find_corner_codel(&block_codels), (3,9));
 
         interp.dp = DP::DOWN;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(3,9)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(3,9)]), (3,9));
+        assert_eq!(interp.find_corner_codel(&vec![(3,9)]), (3,9));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(3,9)]), (3,9));
+        assert_eq!(interp.find_corner_codel(&vec![(3,9)]), (3,9));
 
         interp.dp = DP::LEFT;
         assert_eq!(interp.find_edge_codels(&block_codels), block_codels);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(&block_codels), (3,9));
+        assert_eq!(interp.find_corner_codel(&block_codels), (3,9));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(&block_codels), (0,9));
+        assert_eq!(interp.find_corner_codel(&block_codels), (0,9));
 
         interp.dp = DP::UP;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(0,9)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(0,9)), (0,9));
+        assert_eq!(interp.find_corner_codel(&vec![(0,9)]), (0,9));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(0,9)), (0,9));
+        assert_eq!(interp.find_corner_codel(&vec![(0,9)]), (0,9));
     }
 
     #[test]
@@ -292,30 +288,30 @@ mod tests {
         interp.dp = DP::RIGHT;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(1, 8)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(1, 8)]), (1,8));
+        assert_eq!(interp.find_corner_codel(&vec![(1, 8)]), (1,8));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(1, 8)]), (1,8));
+        assert_eq!(interp.find_corner_codel(&vec![(1, 8)]), (1,8));
 
         interp.dp = DP::DOWN;
         assert_eq!(interp.find_edge_codels(&block_codels), block_codels);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(&block_codels), (1,8));
+        assert_eq!(interp.find_corner_codel(&block_codels), (1,8));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(&block_codels), (1,4));
+        assert_eq!(interp.find_corner_codel(&block_codels), (1,4));
 
         interp.dp = DP::LEFT;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(1,4)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(1, 4)]), (1,4));
+        assert_eq!(interp.find_corner_codel(&vec![(1, 4)]), (1,4));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(1, 4)]), (1,4));
+        assert_eq!(interp.find_corner_codel(&vec![(1, 4)]), (1,4));
 
         interp.dp = DP::UP;
         assert_eq!(interp.find_edge_codels(&block_codels), block_codels);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(&block_codels), (1,4));
+        assert_eq!(interp.find_corner_codel(&block_codels), (1,4));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(&block_codels), (1,8));
+        assert_eq!(interp.find_corner_codel(&block_codels), (1,8));
     }
 
     #[test]
@@ -325,30 +321,30 @@ mod tests {
         interp.dp = DP::RIGHT;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(3,5), (4, 5)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(3,5), (4, 5)]), (3,5));
+        assert_eq!(interp.find_corner_codel(&vec![(3,5), (4, 5)]), (3,5));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(3,5), (4, 5)]), (4,5));
+        assert_eq!(interp.find_corner_codel(&vec![(3,5), (4, 5)]), (4,5));
 
         interp.dp = DP::DOWN;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(4, 4), (4, 5)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(4, 4), (4, 5)]), (4,5));
+        assert_eq!(interp.find_corner_codel(&vec![(4, 4), (4, 5)]), (4,5));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(4, 4), (4, 5)]), (4,4));
+        assert_eq!(interp.find_corner_codel(&vec![(4, 4), (4, 5)]), (4,4));
 
         interp.dp = DP::LEFT;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(3,4), (4,4)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(3,4), (4,4)), (4,4));
+        assert_eq!(interp.find_corner_codel(&vec![(3,4), (4,4)]), (4,4));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(3,4), (4,4)), (3,4));
+        assert_eq!(interp.find_corner_codel(&vec![(3,4), (4,4)]), (3,4));
 
         interp.dp = DP::UP;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(3,4), (3,5)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(3,4), (3,5)]), (3,4));
+        assert_eq!(interp.find_corner_codel(&vec![(3,4), (3,5)]), (3,4));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(3,4), (3,5)]), (3,5));
+        assert_eq!(interp.find_corner_codel(&vec![(3,4), (3,5)]), (3,5));
     }
 
     #[test]
@@ -369,29 +365,29 @@ mod tests {
         interp.dp = DP::RIGHT;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(2,3), (3,3)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(2,3), (3,3)], (2,3));
+        assert_eq!(interp.find_corner_codel(&vec![(2,3), (3,3)]), (2,3));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(2,3), (3,3)], (3,3));
+        assert_eq!(interp.find_corner_codel(&vec![(2,3), (3,3)]), (3,3));
 
         interp.dp = DP::DOWN;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(5, 1)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(5, 1)], (5, 1));
+        assert_eq!(interp.find_corner_codel(&vec![(5, 1)]), (5, 1));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(5, 1)], (5,1));
+        assert_eq!(interp.find_corner_codel(&vec![(5, 1)]), (5,1));
 
         interp.dp = DP::LEFT;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(2,0), (3,0), (4,0)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(2,0), (3,0), (4,0)], (4,0));
+        assert_eq!(interp.find_corner_codel(&vec![(2,0), (3,0), (4,0)]), (4,0));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(2,0), (3,0), (4,0)], (2,0));
+        assert_eq!(interp.find_corner_codel(&vec![(2,0), (3,0), (4,0)]), (2,0));
 
         interp.dp = DP::UP;
         assert_eq!(interp.find_edge_codels(&block_codels), vec![(2,0), (2,1), (2,3)]);
         interp.cc = CC::LEFT;
-        // assert_eq!(interp.find_corner_codel(vec![(2,0), (2,1), (2,3)]), (2,0));
+        assert_eq!(interp.find_corner_codel(&vec![(2,0), (2,1), (2,3)]), (2,0));
         interp.cc = CC::RIGHT;
-        // assert_eq!(interp.find_corner_codel(vec![(2,0), (2,1), (2,3)]), (2,3));
+        assert_eq!(interp.find_corner_codel(&vec![(2,0), (2,1), (2,3)]), (2,3));
     }
 }
