@@ -25,5 +25,8 @@ fn main() -> Result<()> {
     let parser = parsers::SimpleText::default();
     let grid = parser.parse(f)?;
 
+    let interpreter = Interpreter::new(grid);
+    interpreter.run();
+
     Ok(())
 }

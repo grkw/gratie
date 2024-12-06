@@ -11,8 +11,11 @@
 
 use crate::grid::{Color, Grid};
 
+// Index of a codel at (row, column)
+type CodelIndex = (usize, usize);
+
 pub(crate) struct Interpreter {
-    pos: (usize, usize),
+    pos: CodelIndex,
     block_color: Color,
     block_integer: u16,
     hue_change_steps: u8, // tell the command controller
@@ -20,6 +23,25 @@ pub(crate) struct Interpreter {
     dp: DP,
     cc: CC,
 }
+
+//
+// let next_codel = helper function with find_edge_codels + find_corner_codels;
+// look at next_codel; if it is not black, an edge, or white, then you're done
+// compute command and execute
+//
+// if next_codel is black or an edge, this is a potential termination condition
+// but we need to exhaust all options first
+// steps:
+// - toggle CC, and try again
+// - toggle DP, and try again
+// - repeat until a non-terminating codel is found, or you have tried all 8 combinations
+//
+// if the chosen codel is a white codel, follow DP until a codel is found that is not-white, or an
+// edge
+//
+//
+//
+//
 
 // Color block
 // A set of codels (each codel is a struct with a position and color)
@@ -52,7 +74,7 @@ impl Interpreter {
 
     //TODO: use hashmap or hashset?
     //TODO: decide if this should belong to Grid instead, and Interpreter can just query Grid for the # of codels in the block and the next codel according to DP and CC
-    fn find_edge_codels(&self, mut block_codels: Vec<(usize, usize)>) -> Vec<(usize, usize)> {
+    fn find_edge_codels(&self, mut block_codels: Vec<CodelIndex>) -> Vec<CodelIndex> {
         // TODO: decide ownership of block_codels -- maybe it should be a reference slice and the only thing that owns codels is Grid
         let mut edge_codels: Vec<(usize, usize)> = Vec::new();
         if block_codels.is_empty() {
@@ -109,10 +131,8 @@ impl Interpreter {
         edge_codels
     }
 
-    fn find_corner_codel(&self, mut edge_codels: Vec<(usize, usize)>) -> (usize, usize) {
-        if edge_codels.is_empty() {
-            panic!();
-        }
+    fn find_corner_codel(&self, mut edge_codels: Vec<CodelIndex>) -> CodelIndex {
+        assert!(!edge_codels.is_empty(), "edge codels cannot be empty");
 
         todo!();
         // match self.dp {
@@ -145,6 +165,43 @@ impl Interpreter {
         //         }
         //     }
         // }
+    }
+
+    pub(crate) fn run(&self) {
+        let mut current_dp = DP::RIGHT;
+        let mut current_cc = CC::LEFT;
+        // (row, column) index
+        let mut current_codel = (0, 0);
+        let mut terminated = false;
+
+        while !terminated {
+            let current_block: Vec<(usize, usize)> = self.grid.find_codel_block(current_codel);
+            let edge = self.find_edge_codels(current_block);
+            let corner = self.find_corner_codel(edge);
+            let mut next_codel;
+
+            let mut i = 0;
+            while i < 8 {
+                if i % 2 == 0 {
+                    current_dp = current_dp.get_next();
+                } else {
+                    current_cc = current_cc.get_next();
+                }
+
+                next_codel = self.get_next_codel(corner, current_dp, current_cc);
+                i += 1;
+            }
+
+            // TODO: command execution (jph)
+            // TODO: handle termination (grace)
+            // TODO: get_next_codel (jph)
+        }
+    }
+
+    // Return Some<CodelIndex>
+    // Return None if the chosen codel would terminate the program (black or an edge)
+    fn get_next_codel(&self, corner: CodelIndex, dp: DP, cc: CC) -> Option<CodelIndex> {
+        todo!()
     }
     /*
      * interpreter loop:
@@ -181,17 +238,35 @@ impl Interpreter {
         */
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Copy, Clone)]
 enum DP {
     RIGHT,
     DOWN,
     LEFT,
     UP,
 }
-#[derive(PartialEq)]
+impl DP {
+    fn get_next(&self) -> Self {
+        match self {
+            DP::RIGHT => DP::DOWN,
+            DP::DOWN => DP::LEFT,
+            DP::LEFT => DP::UP,
+            DP::UP => DP::RIGHT,
+        }
+    }
+}
+#[derive(PartialEq, Copy, Clone)]
 enum CC {
     LEFT,
     RIGHT,
+}
+impl CC {
+    fn get_next(&self) -> Self {
+        match self {
+            CC::LEFT => CC::RIGHT,
+            CC::RIGHT => CC::LEFT,
+        }
+    }
 }
 
 #[cfg(test)]
