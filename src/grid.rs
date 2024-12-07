@@ -128,11 +128,11 @@ impl Grid {
         results
     }
 
-    fn generate_image(&self, fname: &str, scale_factor: usize) {
-        // a default (black) image containing Rgb values
+    pub(crate) fn generate_image(&self, fname: &str, scale_factor: usize) {
+        // A default (black) image containing Rgb values
         let mut image = RgbImage::new(self.size.0 as u32, self.size.1 as u32);
 
-        // set a central pixel to white
+        // Set each pixel to self.cells
         for r in 0..self.size.0 {
             for c in 0..self.size.1 {
                 image.put_pixel(
@@ -146,14 +146,14 @@ impl Grid {
         // Convert RgbImage to DynamicImage
         let dynamic_image = DynamicImage::ImageRgb8(image);
 
-        // Scale up the image to be about 200x200
+        // Scale up the image by scale_factor
         let scaled_image = dynamic_image.resize(
             (self.size.0 * scale_factor) as u32,
             (self.size.1 * scale_factor) as u32,
             image::imageops::FilterType::Nearest,
         );
 
-        // write it out to a file
+        // Write image out to a file
         scaled_image.save(fname).unwrap();
 
     }

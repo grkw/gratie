@@ -253,6 +253,47 @@ mod tests {
     use super::Grid;
     use super::Interpreter;
     use crate::interpreter::{CC, DP};
+    use std::fs::File;
+    use crate::parsers::{GratieParse, SimpleText};
+
+    #[test]
+    fn push3() {
+        let f = File::open("./tests/txt/valid/push3.txt")
+            .expect("could not open input program file");
+
+        // TODO(jph): check file extension to determine parse type; for now, just create a text parser
+        let parser = SimpleText::default();
+        let grid = parser.parse(f).unwrap();
+        grid.generate_image("tests/png/push3.png", 50);
+        let mut interp = Interpreter::new(grid);
+        interp.run(); // this is where a debugger would be awesome, since we could have checks at each turn/step of the interpreter?
+    }
+
+    #[test]
+    fn push6() {
+        let f = File::open("./tests/txt/valid/push6.txt")
+            .expect("could not open input program file");
+
+        // TODO(jph): check file extension to determine parse type; for now, just create a text parser
+        let parser = SimpleText::default();
+        let grid = parser.parse(f).unwrap();
+        grid.generate_image("tests/png/push6.png", 50);
+        let mut interp = Interpreter::new(grid);
+        interp.run();  // this is where a debugger would be awesome, since we could have checks at each turn/step of the interpreter?
+    }
+
+    #[test]
+    fn print7() {
+        let f = File::open("./tests/txt/valid/print7.txt")
+            .expect("could not open input program file");
+
+        // TODO(jph): check file extension to determine parse type; for now, just create a text parser
+        let parser = SimpleText::default();
+        let grid = parser.parse(f).unwrap();
+        grid.generate_image("tests/png/print7.png", 50);
+        let mut interp = Interpreter::new(grid);
+        interp.run();  // this is where a debugger would be awesome, since we could have checks at each turn/step of the interpreter?
+    }
 
     //TODO: decide if I wanna keep these tests. Before writing them, they seemed to be a good idea. But now that I've written them, they seem silly and unnecessary. Maybe the exercise of writing them out has been the valuable part (rather than their existence).
     //TODO: decide if I wanna split up test functions by "function under test" (rather than input type, which is what I'm currently doing)
