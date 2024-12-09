@@ -65,8 +65,8 @@ impl Color {
 
 #[derive(Debug)]
 pub(crate) struct Grid {
-    cells: Vec<Vec<Color>>, // indexed like a 2d array [row index][col index], *not* like x-y coords
-    size: (usize, usize),
+    pub(crate) cells: Vec<Vec<Color>>, // indexed like a 2d array [row index][col index], *not* like x-y coords
+    pub(crate) size: (usize, usize),
 }
 
 impl Grid {
@@ -142,7 +142,7 @@ impl Grid {
                 );
             }
         }
-        
+
         // Convert RgbImage to DynamicImage
         let dynamic_image = DynamicImage::ImageRgb8(image);
 
@@ -155,7 +155,6 @@ impl Grid {
 
         // Write image out to a file
         scaled_image.save(fname).unwrap();
-
     }
 }
 
