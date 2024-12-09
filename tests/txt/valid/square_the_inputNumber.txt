@@ -1,0 +1,6 @@
+bluegreen,yelloworange,blueviolet,redviolet,yellow,black
+yelloworange,yelloworange,blueviolet,redviolet,yellow,black
+blueviolet,blueviolet,blueviolet,redviolet,yellow,black
+redviolet,redviolet,redviolet,redviolet,yellow,black
+yellow,yellow,yellow,yellow,yellow,black
+black,black,black,black,black

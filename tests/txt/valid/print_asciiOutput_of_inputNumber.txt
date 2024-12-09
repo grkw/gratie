@@ -1,0 +1,4 @@
+redorange,yellowgreen,violet,black
+yellowgreen,yellowgreen,violet,black
+violet,violet,violet,black
+black,black,black,black
