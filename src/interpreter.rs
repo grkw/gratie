@@ -10,6 +10,7 @@
 // The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
 
 use crate::grid::{CodelIndex, Color, Grid};
+use crate::stack::Stack;
 
 pub(crate) struct Interpreter {
     pos: CodelIndex,
@@ -19,6 +20,7 @@ pub(crate) struct Interpreter {
     grid: Grid,
     dp: DP,
     cc: CC,
+    stack: Stack<i32>,
 }
 
 //
@@ -62,6 +64,7 @@ impl Interpreter {
             grid: grid,
             dp: DP::RIGHT,
             cc: CC::LEFT,
+            stack: Stack::new(),
         }
     }
 
@@ -169,7 +172,7 @@ impl Interpreter {
                 }
                 i += 1;
             }
-
+            println!("Codel: {:?}", current_codel);
             if i == 8 {
                 terminated = true;
             }
