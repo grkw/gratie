@@ -63,7 +63,7 @@ impl Color {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct Grid {
     pub(crate) cells: Vec<Vec<Color>>, // indexed like a 2d array [row index][col index], *not* like x-y coords
     pub(crate) size: (usize, usize),
