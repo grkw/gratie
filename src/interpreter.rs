@@ -12,12 +12,13 @@
 use crate::grid::{CodelIndex, Color, Grid};
 use crate::stack::Stack;
 
+#[derive(Clone)]
 pub(crate) struct Interpreter {
     pos: CodelIndex,
     block_color: Color,
     block_integer: u16,
     hue_change_steps: u8, // tell the command controller
-    grid: Grid,
+    pub(crate) grid: Grid,
     dp: DP,
     cc: CC,
     stack: Stack<i32>,

@@ -2,6 +2,7 @@ use image::codecs::qoi;
 use num::Integer;
 use std::fmt::Debug;
 
+#[derive(Clone)]
 pub struct Stack<T: Integer+Copy+Debug> {
     stack: Vec<T>,
 }

@@ -9,3 +9,4 @@ clap = { version = "4.5.21", features = [ "derive" ] }
 thiserror = "2.0.3"
 image = "0.25.5"
 num = "0.4.3"
+easy-repl = "0.2.1"
