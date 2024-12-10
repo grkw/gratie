@@ -31,6 +31,7 @@ fn main() -> Result<()> {
     let grid = parser.parse(f)?;
 
     let interpreter = Interpreter::new(grid.clone());
+    let g = grid.clone();
 
     if args.debug {
         let mut repl = Repl::builder()
@@ -50,9 +51,19 @@ fn main() -> Result<()> {
                 command! {
                     "find all codels in a color block for a given index",
                     (row: usize, col: usize) => | row, col | {
-                        let res = grid.find_codel_block((row, col));
+                        let res = g.find_codel_block((row, col));
                         println!("{:?}", res);
 
+                        Ok(CommandStatus::Done)
+                    }
+                },
+            )
+            .add(
+                "grid",
+                command! {
+                    "print the grid of the current program",
+                    () => || {
+                        println!("{:?}", grid.clone());
                         Ok(CommandStatus::Done)
                     }
                 },
