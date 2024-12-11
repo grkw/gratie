@@ -30,7 +30,7 @@ fn main() -> Result<()> {
     let parser = parsers::SimpleText::default();
     let grid = parser.parse(f)?;
 
-    let interpreter = Interpreter::new(grid.clone());
+    let mut interpreter = Interpreter::new(grid.clone());
     let g = grid.clone();
 
     if args.debug {

@@ -61,6 +61,25 @@ impl Color {
             Color::Black => Some([0, 0, 0]),
         }
     }
+
+    pub(crate) fn get_color_id(&self) -> Option<u8> {
+        match self {
+            Color::Yellow => Some(0),
+            Color::YellowGreen => Some(1),
+            Color::Green => Some(2),
+            Color::BlueGreen => Some(3),
+            Color::Blue => Some(4),
+            Color::BlueViolet => Some(5),
+            Color::Violet => Some(6),
+            Color::RedViolet => Some(7),
+            Color::Red => Some(8),
+            Color::RedOrange => Some(9),
+            Color::Orange => Some(10),
+            Color::YellowOrange => Some(11),
+            Color::White => None,
+            Color::Black => None, 
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

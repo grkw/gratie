@@ -9,6 +9,8 @@
 // The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
 // The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
 
+use std::thread::current;
+
 use crate::grid::{CodelIndex, Color, Grid};
 use crate::stack::Stack;
 
@@ -144,7 +146,7 @@ impl Interpreter {
         *corner_codel
     }
 
-    pub(crate) fn run(&self) {
+    pub(crate) fn run(&mut self) {
         let mut current_dp = DP::RIGHT;
         let mut current_cc = CC::LEFT;
         // (row, column) index
@@ -168,6 +170,7 @@ impl Interpreter {
 
                 next_codel = self.get_next_codel(corner, current_dp);
                 if next_codel.is_some() {
+                    self.execute_command(current_codel, next_codel.unwrap());
                     current_codel = next_codel.unwrap();
                     break;
                 }
@@ -178,10 +181,39 @@ impl Interpreter {
                 terminated = true;
             }
 
-            // TODO: command execution (jph)
-            // TODO: handle termination (grace) -- done (but need to test)
-            // TODO: get_next_codel (jph)
         }
+    }
+
+    fn translate_command(&mut self, color_diff: u8, codel_size: i32) {
+        match color_diff {
+            1 => self.stack.write_out(true),
+            2 => self.stack.read_in(false), //not implemented yet
+            3 => {self.stack.pop();},
+            4 => self.stack.divide(),
+            5 => self.stack.subtract(),
+            6 => self.stack.add(),
+            7 => self.stack.multiply(),
+            8 => self.stack.push(codel_size),
+            9 => self.stack.read_in(true),
+            10 => self.stack.write_out(false),
+            11 => self.stack.duplicate(),
+            _ => panic!("Color diff {:?} is invalid", color_diff),
+        };
+    }
+
+    fn execute_command(&mut self, prev_codel:CodelIndex, current_codel: CodelIndex) {
+        let prev_codel_color = self.grid.cells[prev_codel.0][prev_codel.1];
+        let current_codel_color =self.grid.cells[current_codel.0][current_codel.1];
+        let color_diff = current_codel_color.get_color_id().unwrap() - prev_codel_color.get_color_id().unwrap();
+        
+        println!("Color diff: {:?}", color_diff);
+
+        let mut codel_size: i32 = 0;
+        if color_diff == 8 {
+            let codel_block = self.grid.find_codel_block(prev_codel);
+            codel_size = codel_block.len().try_into().unwrap();
+        }
+        self.translate_command(color_diff, codel_size);
     }
 
     // Return Some<CodelIndex>

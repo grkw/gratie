@@ -12,23 +12,25 @@ impl<T: Integer+Copy+Debug> Stack<T> {
         Stack { stack: Vec::new() }
     }
 
-    fn pop(&mut self) -> Option<T> {
+    pub fn pop(&mut self) -> Option<T> {
+        println!("POP");
         self.stack.pop() // If the vector is empty, you get a None
     }
 
-    fn push(&mut self, item: T) {
+    pub fn push(&mut self, item: T) {
+        println!("PUSH");
         self.stack.push(item)
     }
 
-    fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.stack.is_empty()
     }
 
-    fn length(&self) -> usize {
+    pub fn length(&self) -> usize {
         self.stack.len()
     }
 
-    fn peek(&self) -> Option<T> {
+    pub fn peek(&self) -> Option<T> {
        if !self.stack.is_empty() {
         return Some(self.stack[self.length()-1]); // makes a copy
        } else {
@@ -36,7 +38,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
        }
     }
 
-    fn add(&mut self) {
+    pub fn add(&mut self) {
+        println!("+");
         let a1 = self.stack.pop();
         let a2 = self.stack.pop();
         if a1.is_some() && a2.is_some() {
@@ -47,7 +50,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
         }
     }
 
-    fn subtract(&mut self) {
+    pub fn subtract(&mut self) {
+        println!("-");
         let s1 = self.stack.pop();
         let s2 = self.stack.pop();
         if s1.is_some() && s2.is_some() {
@@ -58,7 +62,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
         }
     }
 
-    fn multiply(&mut self) {
+    pub fn multiply(&mut self) {
+        println!("*");
         let m1 = self.stack.pop();
         let m2 = self.stack.pop();
         if m1.is_some() && m2.is_some() {
@@ -69,7 +74,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
         } 
     }
 
-    fn divide(&mut self) {
+    pub fn divide(&mut self) {
+        println!("/");
         let d1 = self.stack.pop();
         let d2 = self.stack.pop();
         if d1.is_some() && d2.is_some() {
@@ -80,7 +86,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
         }
     }
 
-    fn duplicate(&mut self) {
+    pub fn duplicate(&mut self) {
+        println!("DUPLICATE");
         let top = self.peek();
       
         if top.is_some() {
@@ -90,8 +97,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
         }
     }
 
-    fn read_in(&mut self, is_char: bool) {
-        
+    pub fn read_in(&mut self, is_char: bool) {
+        println!("READIN");
         // if is_char {
 
         // } else {
@@ -101,7 +108,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
         // self.stack.push(input)
     }
 
-    fn write_out(&mut self, is_char: bool) {
+    pub fn write_out(&mut self, is_char: bool) {
+        println!("WRITEOUT");
         let top = self.stack.pop();
         if top.is_some() { //char::fromi32
             print!("{:?}", top.unwrap());
