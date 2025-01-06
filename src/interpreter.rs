@@ -150,11 +150,6 @@ impl Interpreter {
             let mut i = 0;
             while i < 8 {
                 println!("i: {:?}", i);
-                if i % 2 == 0 {
-                    self.dp = self.dp.get_next();
-                } else {
-                    self.cc = self.cc.get_next();
-                }
 
                 next_codel = self.get_next_codel(corner);
                 println!("next_codel: {:?}", next_codel);
@@ -163,7 +158,14 @@ impl Interpreter {
                     current_codel = next_codel.unwrap();
                     break;
                 }
+                
                 i += 1;
+
+                if i % 2 == 0 {
+                    self.dp = self.dp.get_next();
+                } else {
+                    self.cc = self.cc.get_next();
+                }
             }
             if i == 8 {
                 println!("terminated");
@@ -215,6 +217,7 @@ impl Interpreter {
         let mut next_codel_idx: (isize, isize);
         let mut new_codel;
 
+        println!("self.dp: {:?}", self.dp);
         loop {
             next_codel_idx = match self.dp {
                 DP::LEFT => (corner.0 as isize, corner.1 as isize - 1),
