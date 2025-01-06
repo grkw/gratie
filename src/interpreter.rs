@@ -5,10 +5,6 @@
 // - run: run entire program and print result
 //
 
-// The interpreter finds the edge of the current colour block which is furthest in the direction of the DP. (This edge may be disjoint if the block is of a complex shape.)
-// The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
-// The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
-
 use std::thread::current;
 
 use crate::grid::{CodelIndex, Color, Grid};
@@ -17,15 +13,100 @@ use crate::stack::Stack;
 #[derive(Clone)]
 pub(crate) struct Interpreter {
     pos: CodelIndex,
-    block_color: Color,
-    block_integer: u16,
-    hue_change_steps: u8, // tell the command controller
     pub(crate) grid: Grid,
     dp: DP,
     cc: CC,
     stack: Stack<i32>,
 }
 
+impl Interpreter {
+    pub(crate) fn new(grid: Grid) -> Self {
+        let init_pos = (0, 0);
+        let init_color = grid.get_color(init_pos);
+        // let init_block_integer = grid.find_codel_block(init_pos);
+        Interpreter {
+            pos: init_pos,
+            grid: grid,
+            dp: DP::RIGHT,
+            cc: CC::LEFT,
+            stack: Stack::new(),
+        }
+    }
+
+    fn step() {
+        todo!()
+    }
+
+    //TODO: use hashmap or hashset?
+    fn find_edge_codels(&self, block_codels: &Vec<CodelIndex>) -> Vec<CodelIndex> {
+        assert!(!block_codels.is_empty(), "block codels must not be empty"); // the first argument should be true; if it is not, raise an error that says ""
+
+        // Create a local copy which will change the order of block_codels
+        let mut block_codels = block_codels.clone();
+
+        // println!("self.dp: {:?}", self.dp);
+
+        // Sort block_codels by the coordinate corresponding to DP
+        let sort_key: Box<dyn Fn(&CodelIndex) -> usize> = match self.dp {
+            DP::RIGHT | DP::LEFT => {
+                block_codels.sort_by_key(|tuple| tuple.1);
+                Box::new(|tuple: &CodelIndex| tuple.1)
+            }
+            DP::UP | DP::DOWN => {
+                block_codels.sort_by_key(|tuple| tuple.0);
+                Box::new(|tuple: &CodelIndex| tuple.0)
+            }
+        };
+        // println!("block codels: {:?}", block_codels);
+
+        // Determine furthest-edge coordinate to filter block_codels by
+        let edge_coord = match self.dp {
+            DP::RIGHT => block_codels.last().unwrap().1,
+            DP::DOWN => block_codels.last().unwrap().0,
+            DP::LEFT => block_codels.first().unwrap().1,
+            DP::UP => block_codels.first().unwrap().0,
+        };
+        // println!("edge coord: {:?}", edge_coord);
+
+        let edge_codels: Vec<CodelIndex> = block_codels
+            .into_iter()
+            .filter(|c| sort_key(c) == edge_coord)
+            .collect();
+
+        edge_codels
+    }
+
+    fn find_corner_codel(&self, edge_codels: &Vec<CodelIndex>) -> CodelIndex {
+        assert!(!edge_codels.is_empty(), "edge codels cannot be empty");
+
+        // Create a local copy which will change the order of edge_codels
+        let mut edge_codels = edge_codels.clone();
+
+        // println!("self.dp: {:?}", self.dp);
+        // println!("self.cc: {:?}", self.cc);
+
+        // Sort edge_codels by the coordinate *not* corresponding to DP (the coordinate that CC will use to pick one codel).
+        match self.dp {
+            DP::RIGHT | DP::LEFT => {
+                edge_codels.sort_by_key(|tuple| tuple.0);
+            }
+            DP::UP | DP::DOWN => {
+                edge_codels.sort_by_key(|tuple| tuple.1);
+            }
+        };
+        // println!("block codels: {:?}", edge_codels);
+
+        // Select the corner codel according to CC, from DP's frame of reference.
+        let corner_codel = match (self.dp, self.cc) {
+            (DP::RIGHT, CC::RIGHT) | (DP::LEFT, CC::LEFT) => edge_codels.last().unwrap(), // bottom-most
+            (DP::DOWN, CC::LEFT) | (DP::UP, CC::RIGHT) => edge_codels.last().unwrap(), // right-most
+            (DP::DOWN, CC::RIGHT) | (DP::UP, CC::LEFT) => edge_codels.first().unwrap(), // left-most
+            (DP::RIGHT, CC::LEFT) | (DP::LEFT, CC::RIGHT) => edge_codels.first().unwrap(), // top-most
+        };
+        // println!("corner codel: {:?}", *corner_codel);
+
+        *corner_codel
+    }
 //
 // let next_codel = helper function with find_edge_codels + find_corner_codels;
 // look at next_codel; if it is not black, an edge, or white, then you're done
@@ -45,130 +126,38 @@ pub(crate) struct Interpreter {
 //
 //
 
-// Color block
-// A set of codels (each codel is a struct with a position and color)
-// struct Codel {
-//     color: Color,
-//     pos: (usize, usize),
-// }
-
-// Program grid
-
-impl Interpreter {
-    pub(crate) fn new(grid: Grid) -> Self {
-        let init_pos = (0, 0);
-        let init_color = grid.get_color(init_pos);
-        // let init_block_integer = grid.find_codel_block(init_pos);
-        Interpreter {
-            pos: init_pos,
-            block_color: init_color,
-            block_integer: 0,
-            hue_change_steps: 0,
-            grid: grid,
-            dp: DP::RIGHT,
-            cc: CC::LEFT,
-            stack: Stack::new(),
-        }
-    }
-
-    fn step() {
-        todo!()
-    }
-
-    //TODO: use hashmap or hashset?
-    fn find_edge_codels(&self, block_codels: &Vec<CodelIndex>) -> Vec<CodelIndex> {
-        assert!(!block_codels.is_empty(), "block codels must not be empty"); // the first argument should be true; if it is not, raise an error that says ""
-
-        // Create a local copy which will change the order of block_codels
-        let mut block_codels = block_codels.clone();
-
-        println!("self.dp: {:?}", self.dp);
-
-        // Sort block_codels by the coordinate corresponding to DP
-        let sort_key: Box<dyn Fn(&CodelIndex) -> usize> = match self.dp {
-            DP::RIGHT | DP::LEFT => {
-                block_codels.sort_by_key(|tuple| tuple.1);
-                Box::new(|tuple: &CodelIndex| tuple.1)
-            }
-            DP::UP | DP::DOWN => {
-                block_codels.sort_by_key(|tuple| tuple.0);
-                Box::new(|tuple: &CodelIndex| tuple.0)
-            }
-        };
-        println!("block codels: {:?}", block_codels);
-
-        // Determine furthest-edge coordinate to filter block_codels by
-        let edge_coord = match self.dp {
-            DP::RIGHT => block_codels.last().unwrap().1,
-            DP::DOWN => block_codels.last().unwrap().0,
-            DP::LEFT => block_codels.first().unwrap().1,
-            DP::UP => block_codels.first().unwrap().0,
-        };
-        println!("edge coord: {:?}", edge_coord);
-
-        let edge_codels: Vec<CodelIndex> = block_codels
-            .into_iter()
-            .filter(|c| sort_key(c) == edge_coord)
-            .collect();
-
-        edge_codels
-    }
-
-    fn find_corner_codel(&self, edge_codels: &Vec<CodelIndex>) -> CodelIndex {
-        assert!(!edge_codels.is_empty(), "edge codels cannot be empty");
-
-        // Create a local copy which will change the order of edge_codels
-        let mut edge_codels = edge_codels.clone();
-
-        println!("self.dp: {:?}", self.dp);
-        println!("self.cc: {:?}", self.cc);
-
-        // Sort edge_codels by the coordinate *not* corresponding to DP (the coordinate that CC will use to pick one codel).
-        match self.dp {
-            DP::RIGHT | DP::LEFT => {
-                edge_codels.sort_by_key(|tuple| tuple.0);
-            }
-            DP::UP | DP::DOWN => {
-                edge_codels.sort_by_key(|tuple| tuple.1);
-            }
-        };
-        println!("block codels: {:?}", edge_codels);
-
-        // Select the corner codel according to CC, from DP's frame of reference.
-        let corner_codel = match (self.dp, self.cc) {
-            (DP::RIGHT, CC::RIGHT) | (DP::LEFT, CC::LEFT) => edge_codels.last().unwrap(), // bottom-most
-            (DP::DOWN, CC::LEFT) | (DP::UP, CC::RIGHT) => edge_codels.last().unwrap(), // right-most
-            (DP::DOWN, CC::RIGHT) | (DP::UP, CC::LEFT) => edge_codels.first().unwrap(), // left-most
-            (DP::RIGHT, CC::LEFT) | (DP::LEFT, CC::RIGHT) => edge_codels.first().unwrap(), // top-most
-        };
-        println!("corner codel: {:?}", *corner_codel);
-
-        *corner_codel
-    }
+// The interpreter finds the edge of the current colour block which is furthest in the direction of the DP. (This edge may be disjoint if the block is of a complex shape.)
+// The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
+// The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
 
     pub(crate) fn run(&mut self) {
-        let mut current_dp = DP::RIGHT;
-        let mut current_cc = CC::LEFT;
+        // let mut current_dp = DP::RIGHT;
+        // let mut current_cc = CC::LEFT;
         // (row, column) index
         let mut current_codel = (0, 0);
         let mut terminated = false;
 
         while !terminated {
+            println!("\nNew turn");
             let current_block: Vec<CodelIndex> = self.grid.find_codel_block(current_codel);
+            println!("current_block: {:?}", current_block);
             let edge = self.find_edge_codels(&current_block);
             let corner = self.find_corner_codel(&edge);
-
+            println!("corner: {:?}", corner);
+            
             let mut next_codel;
 
             let mut i = 0;
             while i < 8 {
+                println!("i: {:?}", i);
                 if i % 2 == 0 {
-                    current_dp = current_dp.get_next();
+                    self.dp = self.dp.get_next();
                 } else {
-                    current_cc = current_cc.get_next();
+                    self.cc = self.cc.get_next();
                 }
 
-                next_codel = self.get_next_codel(corner, current_dp);
+                next_codel = self.get_next_codel(corner);
+                println!("next_codel: {:?}", next_codel);
                 if next_codel.is_some() {
                     self.execute_command(current_codel, next_codel.unwrap());
                     current_codel = next_codel.unwrap();
@@ -176,8 +165,8 @@ impl Interpreter {
                 }
                 i += 1;
             }
-            println!("Codel: {:?}", current_codel);
             if i == 8 {
+                println!("terminated");
                 terminated = true;
             }
 
@@ -186,17 +175,17 @@ impl Interpreter {
 
     fn translate_command(&mut self, color_diff: u8, codel_size: i32) {
         match color_diff {
-            1 => self.stack.write_out(true),
-            2 => self.stack.read_in(false), //not implemented yet
-            3 => {self.stack.pop();},
-            4 => self.stack.divide(),
-            5 => self.stack.subtract(),
-            6 => self.stack.add(),
-            7 => self.stack.multiply(),
-            8 => self.stack.push(codel_size),
-            9 => self.stack.read_in(true),
-            10 => self.stack.write_out(false),
-            11 => self.stack.duplicate(),
+            7 => self.stack.write_out(true),
+            8 => self.stack.read_in(false), //not implemented yet
+            9 => {self.stack.pop();},
+            10 => self.stack.divide(),
+            11 => self.stack.subtract(),
+            1 => self.stack.add(),
+            2 => self.stack.multiply(),
+            3 => self.stack.push(codel_size),
+            4 => self.stack.read_in(true),
+            5 => self.stack.write_out(false),
+            6 => self.stack.duplicate(),
             _ => panic!("Color diff {:?} is invalid", color_diff),
         };
     }
@@ -205,7 +194,11 @@ impl Interpreter {
         let prev_codel_color = self.grid.cells[prev_codel.0][prev_codel.1];
         let current_codel_color =self.grid.cells[current_codel.0][current_codel.1];
         let color_diff = current_codel_color.get_color_id().unwrap() - prev_codel_color.get_color_id().unwrap();
-        
+        println!("EXECUTE_COMMAND:");
+        println!("prev_codel: {:?}", prev_codel);
+        println!("current_codel: {:?}", current_codel);
+        println!("prev_codel_color: {:?}", prev_codel_color);
+        println!("current_codel_color: {:?}", current_codel_color);
         println!("Color diff: {:?}", color_diff);
 
         let mut codel_size: i32 = 0;
@@ -218,12 +211,12 @@ impl Interpreter {
 
     // Return Some<CodelIndex>
     // Return None if the chosen codel would terminate the program (black or an edge)
-    fn get_next_codel(&self, corner: CodelIndex, dp: DP) -> Option<CodelIndex> {
+    fn get_next_codel(&self, corner: CodelIndex) -> Option<CodelIndex> {
         let mut next_codel_idx: (isize, isize);
         let mut new_codel;
 
         loop {
-            next_codel_idx = match dp {
+            next_codel_idx = match self.dp {
                 DP::LEFT => (corner.0 as isize, corner.1 as isize - 1),
                 DP::RIGHT => (corner.0 as isize, corner.1 as isize + 1),
                 DP::UP => (corner.0 as isize - 1, corner.1 as isize),
@@ -251,39 +244,7 @@ impl Interpreter {
 
         Some((next_codel_idx.0 as usize, next_codel_idx.1 as usize))
     }
-    /*
-     * interpreter loop:
-     *
-     * state to track across iterations:
-     * - index of current codel (pre: new index inside a color block)
-     * - DP direction
-     * - CC direction
-     * - stack
-    step
-        get color of current codel
-        find all codels in current color block (floodfill)
-         * interpreter loop:
-         *
-         * state to track across iterations:
-         * - index of current codel (pre: new index inside a color block)
-         * - DP direction
-         * - CC direction
-         * - stack
-        step
-            get color of current codel
-            find all codels in current color block (floodfill)
-            find block integer
 
-            find edge (DP): returns a few codel options
-
-        find codel (CC): returns one codel option
-            find codel (CC): returns one code option
-    DP_CC_dir = ([right, left], [right, right], [down, right], [down, left])
-            move: update color_block
-                handle white block
-                handle black block or edge
-
-        */
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]
@@ -324,6 +285,19 @@ mod tests {
     use crate::interpreter::{CC, DP};
     use crate::parsers::{GratieParse, SimpleText};
     use std::fs::File;
+
+    #[test]
+    fn test_get_next_codel() {
+        let f =
+            File::open("./tests/txt/valid/push3.txt").expect("could not open input program file");
+
+        // TODO(jph): check file extension to determine parse type; for now, just create a text parser
+        let parser = SimpleText::default();
+        let grid = parser.parse(f).unwrap();
+        let interp = Interpreter::new(grid);
+        assert_eq!(interp.get_next_codel((0,1), DP::RIGHT),Some((0,2)));
+        assert_eq!(interp.get_next_codel((0,2), DP::RIGHT),None);
+    }
 
     #[test]
     fn push3() {
