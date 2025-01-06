@@ -1,6 +1,7 @@
-blue,blue,blue,redviolet,yellow,black,black,black
-blue,blue,blue,redviolet,yellow,black,black,black
-blue,redviolet,redviolet,redviolet,yellow,yellow,black,black
-redviolet,redviolet,yellow,yellow,yellow,yellow,black,black
-yellow,yellow,yellow,yellow,yellow,black,black,black
-black,black,black,black,black,black,black,black
+blue,blue,blue,redviolet,yellow,black,black
+blue,blue,blue,redviolet,yellow,black,black
+blue,redviolet,redviolet,redviolet,yellow,yellow,black
+redviolet,redviolet,yellow,yellow,yellow,yellow,black
+yellow,yellow,yellow,yellow,yellow,black,black
+black,black,black,black,black,black,black
+black,black,black,black,black,black,black

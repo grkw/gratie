@@ -183,7 +183,7 @@ impl Interpreter {
             1 => self.stack.add(),
             2 => self.stack.multiply(),
             3 => self.stack.push(codel_size),
-            4 => self.stack.read_in(true),
+            4 => self.stack.read_in(true), //not implemented yet
             5 => self.stack.write_out(false),
             6 => self.stack.duplicate(),
             _ => panic!("Color diff {:?} is invalid", color_diff),
@@ -193,7 +193,14 @@ impl Interpreter {
     fn execute_command(&mut self, prev_codel:CodelIndex, current_codel: CodelIndex) {
         let prev_codel_color = self.grid.cells[prev_codel.0][prev_codel.1];
         let current_codel_color =self.grid.cells[current_codel.0][current_codel.1];
-        let color_diff = current_codel_color.get_color_id().unwrap() - prev_codel_color.get_color_id().unwrap();
+        let prev_id = prev_codel_color.get_color_id().unwrap();
+        let current_id = current_codel_color.get_color_id().unwrap();
+        let color_diff: u8;
+        if prev_id > current_id {
+            color_diff = prev_id - current_id;
+        } else {
+            color_diff = current_id - prev_id;
+        }
         println!("EXECUTE_COMMAND:");
         println!("prev_codel: {:?}", prev_codel);
         println!("current_codel: {:?}", current_codel);
@@ -326,6 +333,8 @@ mod tests {
         grid.generate_image("tests/png/push6.png", 50);
         let mut interp = Interpreter::new(grid);
         interp.run(); // this is where a debugger would be awesome, since we could have checks at each turn/step of the interpreter?
+        assert_eq!(interp.stack.stack.len(), 1);
+        assert_eq!(interp.stack.stack[0], 6);
     }
 
     #[test]
