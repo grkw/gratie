@@ -202,7 +202,7 @@ impl Interpreter {
         println!("Color diff: {:?}", color_diff);
 
         let mut codel_size: i32 = 0;
-        if color_diff == 8 {
+        if color_diff == 3 {
             let codel_block = self.grid.find_codel_block(prev_codel);
             codel_size = codel_block.len().try_into().unwrap();
         }
@@ -296,8 +296,8 @@ mod tests {
         let parser = SimpleText::default();
         let grid = parser.parse(f).unwrap();
         let interp = Interpreter::new(grid);
-        assert_eq!(interp.get_next_codel((0,1), DP::RIGHT),Some((0,2)));
-        assert_eq!(interp.get_next_codel((0,2), DP::RIGHT),None);
+        assert_eq!(interp.get_next_codel((0,1)),Some((0,2)));
+        assert_eq!(interp.get_next_codel((0,2)),None);
     }
 
     #[test]
@@ -311,6 +311,8 @@ mod tests {
         grid.generate_image("tests/png/push3.png", 50);
         let mut interp = Interpreter::new(grid);
         interp.run(); // this is where a debugger would be awesome, since we could have checks at each turn/step of the interpreter?
+        assert_eq!(interp.stack.stack.len(), 1);
+        assert_eq!(interp.stack.stack[0], 3);
     }
 
     #[test]

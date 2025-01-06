@@ -2,9 +2,9 @@ use image::codecs::qoi;
 use num::Integer;
 use std::fmt::Debug;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Stack<T: Integer+Copy+Debug> {
-    stack: Vec<T>,
+    pub stack: Vec<T>,
 }
 
 impl<T: Integer+Copy+Debug> Stack<T> {
