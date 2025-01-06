@@ -107,28 +107,28 @@ impl Interpreter {
 
         *corner_codel
     }
-//
-// let next_codel = helper function with find_edge_codels + find_corner_codels;
-// look at next_codel; if it is not black, an edge, or white, then you're done
-// compute command and execute
-//
-// if next_codel is black or an edge, this is a potential termination condition
-// but we need to exhaust all options first
-// steps:
-// - toggle CC, and try again
-// - toggle DP, and try again
-// - repeat until a non-terminating codel is found, or you have tried all 8 combinations
-//
-// if the chosen codel is a white codel, follow DP until a codel is found that is not-white, or an
-// edge
-//
-//
-//
-//
+    //
+    // let next_codel = helper function with find_edge_codels + find_corner_codels;
+    // look at next_codel; if it is not black, an edge, or white, then you're done
+    // compute command and execute
+    //
+    // if next_codel is black or an edge, this is a potential termination condition
+    // but we need to exhaust all options first
+    // steps:
+    // - toggle CC, and try again
+    // - toggle DP, and try again
+    // - repeat until a non-terminating codel is found, or you have tried all 8 combinations
+    //
+    // if the chosen codel is a white codel, follow DP until a codel is found that is not-white, or an
+    // edge
+    //
+    //
+    //
+    //
 
-// The interpreter finds the edge of the current colour block which is furthest in the direction of the DP. (This edge may be disjoint if the block is of a complex shape.)
-// The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
-// The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
+    // The interpreter finds the edge of the current colour block which is furthest in the direction of the DP. (This edge may be disjoint if the block is of a complex shape.)
+    // The interpreter finds the codel of the current colour block on that edge which is furthest to the CC's direction of the DP's direction of travel. (Visualise this as standing on the program and walking in the direction of the DP; see table at right.)
+    // The interpreter travels from that codel into the colour block containing the codel immediately in the direction of the DP.
 
     pub(crate) fn run(&mut self) {
         // let mut current_dp = DP::RIGHT;
@@ -156,7 +156,7 @@ impl Interpreter {
                     current_codel = next_codel.unwrap();
                     break;
                 }
-                
+
                 i += 1;
 
                 if i % 2 == 0 {
@@ -169,7 +169,6 @@ impl Interpreter {
                 println!("terminated");
                 terminated = true;
             }
-
         }
     }
 
@@ -177,7 +176,9 @@ impl Interpreter {
         match color_diff {
             7 => self.stack.write_out(true),
             8 => self.stack.read_in(false), //not implemented yet
-            9 => {self.stack.pop();},
+            9 => {
+                self.stack.pop();
+            }
             10 => self.stack.divide(),
             11 => self.stack.subtract(),
             1 => self.stack.add(),
@@ -190,9 +191,9 @@ impl Interpreter {
         };
     }
 
-    fn execute_command(&mut self, prev_codel:CodelIndex, current_codel: CodelIndex) {
+    fn execute_command(&mut self, prev_codel: CodelIndex, current_codel: CodelIndex) {
         let prev_codel_color = self.grid.cells[prev_codel.0][prev_codel.1];
-        let current_codel_color =self.grid.cells[current_codel.0][current_codel.1];
+        let current_codel_color = self.grid.cells[current_codel.0][current_codel.1];
         let prev_id = prev_codel_color.get_color_id().unwrap();
         let current_id = current_codel_color.get_color_id().unwrap();
         let color_diff: u8;
@@ -252,7 +253,6 @@ impl Interpreter {
 
         Some((next_codel_idx.0 as usize, next_codel_idx.1 as usize))
     }
-
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]
@@ -303,8 +303,8 @@ mod tests {
         let parser = SimpleText::default();
         let grid = parser.parse(f).unwrap();
         let interp = Interpreter::new(grid);
-        assert_eq!(interp.get_next_codel((0,1)),Some((0,2)));
-        assert_eq!(interp.get_next_codel((0,2)),None);
+        assert_eq!(interp.get_next_codel((0, 1)), Some((0, 2)));
+        assert_eq!(interp.get_next_codel((0, 2)), None);
     }
 
     #[test]

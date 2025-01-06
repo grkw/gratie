@@ -77,7 +77,7 @@ impl Color {
             Color::Orange => Some(10),
             Color::YellowOrange => Some(11),
             Color::White => None,
-            Color::Black => None, 
+            Color::Black => None,
         }
     }
 }

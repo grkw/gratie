@@ -3,11 +3,11 @@ use num::Integer;
 use std::fmt::Debug;
 
 #[derive(Clone, Debug)]
-pub struct Stack<T: Integer+Copy+Debug> {
+pub struct Stack<T: Integer + Copy + Debug> {
     pub stack: Vec<T>,
 }
 
-impl<T: Integer+Copy+Debug> Stack<T> {
+impl<T: Integer + Copy + Debug> Stack<T> {
     pub fn new() -> Self {
         Stack { stack: Vec::new() }
     }
@@ -31,11 +31,11 @@ impl<T: Integer+Copy+Debug> Stack<T> {
     }
 
     pub fn peek(&self) -> Option<T> {
-       if !self.stack.is_empty() {
-        return Some(self.stack[self.length()-1]); // makes a copy
-       } else {
+        if !self.stack.is_empty() {
+            return Some(self.stack[self.length() - 1]); // makes a copy
+        } else {
             return None;
-       }
+        }
     }
 
     pub fn add(&mut self) {
@@ -58,7 +58,7 @@ impl<T: Integer+Copy+Debug> Stack<T> {
             let sub = s1.unwrap() - s2.unwrap();
             self.stack.push(sub);
         } else {
-            panic!("Subtract command needs to have at least 2 values on the stack."); 
+            panic!("Subtract command needs to have at least 2 values on the stack.");
         }
     }
 
@@ -70,8 +70,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
             let prod = m1.unwrap() - m2.unwrap();
             self.stack.push(prod);
         } else {
-            panic!("Multiply command needs to have at least 2 values on the stack."); 
-        } 
+            panic!("Multiply command needs to have at least 2 values on the stack.");
+        }
     }
 
     pub fn divide(&mut self) {
@@ -82,18 +82,18 @@ impl<T: Integer+Copy+Debug> Stack<T> {
             let div = d1.unwrap() - d2.unwrap();
             self.stack.push(div);
         } else {
-            panic!("Divide command needs to have at least 2 values on the stack."); 
+            panic!("Divide command needs to have at least 2 values on the stack.");
         }
     }
 
     pub fn duplicate(&mut self) {
         println!("DUPLICATE");
         let top = self.peek();
-      
+
         if top.is_some() {
             self.stack.push(top.unwrap());
         } else {
-            panic!("Duplicate command needs to have at least 1 value on the stack."); 
+            panic!("Duplicate command needs to have at least 1 value on the stack.");
         }
     }
 
@@ -111,7 +111,8 @@ impl<T: Integer+Copy+Debug> Stack<T> {
     pub fn write_out(&mut self, is_char: bool) {
         println!("WRITEOUT");
         let top = self.stack.pop();
-        if top.is_some() { //char::fromi32
+        if top.is_some() {
+            //char::fromi32
             print!("{:?}", top.unwrap());
         } else {
             panic!("Write command needs to have at least one value on the stack.");
