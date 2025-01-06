@@ -141,17 +141,15 @@ impl Interpreter {
             println!("\nNew turn");
             let current_block: Vec<CodelIndex> = self.grid.find_codel_block(current_codel);
             println!("current_block: {:?}", current_block);
-            let edge = self.find_edge_codels(&current_block);
-            let corner = self.find_corner_codel(&edge);
-            println!("corner: {:?}", corner);
-            
-            let mut next_codel;
 
             let mut i = 0;
             while i < 8 {
                 println!("i: {:?}", i);
 
-                next_codel = self.get_next_codel(corner);
+                let edge = self.find_edge_codels(&current_block);
+                let corner = self.find_corner_codel(&edge);
+                println!("corner: {:?}", corner);
+                let next_codel = self.get_next_codel(corner);
                 println!("next_codel: {:?}", next_codel);
                 if next_codel.is_some() {
                     self.execute_command(current_codel, next_codel.unwrap());
