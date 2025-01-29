@@ -18,12 +18,6 @@ My version of the [Piet programming language](https://dangermouse.net/esoteric/p
 
 I designed Gratie to be a minimalist version of Piet while retaining its esoteric-ness. The main components of the interpreter are the parser (parses the text-based input program), grid (stores the parsed input as a grid of `Colors`), and stack (stores the values of the program). We put all the pieces together with the program execution logic in `interpreter.rs`.
 
-### How Piet works
-
-- [Visual video explanation of what's going on with the "direction pointer" and "codel chooser"](https://youtu.be/IcmCvT5whk0?si=cvZTspfWsUEzuZf1&t=402)
-- [User-friendly in-browser Piet IDE done by a former Recurser](https://gabriellesc.github.io/piet/) and [another one](https://piet-editor.github.io/)
-- [Examples for implementing control flow in Piet](https://web.archive.org/web/20190818054404/http://homepages.vub.ac.be/~diddesen/piet/index.html)
-
 ## Usage
 
 To write your own Gratie program:
@@ -55,6 +49,14 @@ Push 3 onto the stack
 Print 7 to the console
 
 <img src="tests/png/print7.png" alt="drawing" width="400"/>
+
+## Acknowledgements
+
+### Helpful resources on how Piet works
+
+- [Visual video explanation of what's going on with the "direction pointer" and "codel chooser"](https://youtu.be/IcmCvT5whk0?si=cvZTspfWsUEzuZf1&t=402)
+- [User-friendly in-browser Piet IDE done by a former Recurser](https://gabriellesc.github.io/piet/) and [another one](https://piet-editor.github.io/)
+- [Examples for implementing control flow in Piet](https://web.archive.org/web/20190818054404/http://homepages.vub.ac.be/~diddesen/piet/index.html)
 
 ## License
 
